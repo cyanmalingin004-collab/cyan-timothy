@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#176b45">
+  <title>SKOPAT | Plant Explorer</title>
+  <style>
+    :root {
+      --green: #176b45;
+      --green-dark: #104c31;
+      --mint: #eaf7ee;
+      --cream: #f6faf5;
+      --ink: #20352a;
+      --muted: #65766a;
+      --white: #fff;
+      --line: #dce9de;
+      --shadow: 0 8px 24px rgba(20, 70, 40, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+    }
+    header {
+      padding: 25px 16px 28px;
+      text-align: center;
+      color: white;
+      background: linear-gradient(145deg, var(--green-dark), #27945d);
+    }
+    .logo {
+      display: inline-grid;
+      place-items: center;
+      width: 68px; height: 68px;
+      border-radius: 22px;
+      background: white;
+      color: var(--green);
+      font-size: 35px;
+      box-shadow: 0 6px 20px #0002;
+    }
+    header h1 { margin: 10px 0 4px; font-size: 32px; letter-spacing: 4px; }
+    header p { margin: 0; opacity: .92; font-size: 14px; }
+    nav {
+      display: flex;
+      gap: 7px;
+      padding: 10px;
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      box-shadow: 0 3px 12px #173c2410;
+    }
+    nav button {
+      flex: 1;
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 4px;
+      background: var(--mint);
+      color: var(--green);
+      font-weight: 750;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    nav button.active { background: var(--green); color: white; }
+    main { width: min(900px, 100%); margin: auto; padding: 17px; }
+    .page { display: none; }
+    .page.active { display: block; }
+    h2 { color: var(--green); margin-top: 0; }
+    h3 { margin: 8px 0 5px; }
+    p { line-height: 1.5; }
+    .hero {
+      padding: 23px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #d7f4df, #f8fff8);
+      border: 1px solid #cce8d2;
+      margin-bottom: 17px;
+    }
+    .hero h2 { font-size: 28px; margin-bottom: 8px; }
+    .hero p { margin-top: 0; }
+    .card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 17px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+    }
+    .primary, .secondary {
+      border: 0;
+      border-radius: 11px;
+      padding: 12px 16px;
+      font-weight: 750;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .primary { background: var(--green); color: white; }
+    .primary:hover { background: var(--green-dark); }
+    .secondary { background: var(--mint); color: var(--green); }
+    input, select {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0 12px;
+      border: 1px solid #c9daca;
+      border-radius: 11px;
+      background: white;
+      color: var(--ink);
+      font: inherit;
+    }
+    label { display: block; font-weight: 700; margin-top: 10px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .plant {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 16px;
+      padding: 13px;
+      cursor: pointer;
+      text-align: left;
+      color: inherit;
+      box-shadow: 0 4px 12px #173c2408;
+    }
+    .plant-icon {
+      display: grid;
+      place-items: center;
+      min-height: 94px;
+      background: var(--mint);
+      border-radius: 12px;
+      font-size: 43px;
+    }
+    .plant h3 { color: var(--green); }
+    .muted { color: var(--muted); font-size: 13px; }
+    .tag {
+      display: inline-block;
+      padding: 4px 8px;
+      margin-top: 5px;
+      border-radius: 20px;
+      background: var(--mint);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    #photoPreview {
+      display: none;
+      max-width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      border-radius: 12px;
+      margin: 8px 0 12px;
+    }
+    .notice {
+      padding: 12px;
+      border-radius: 12px;
+      background: #fff7df;
+      color: #71551a;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+    .quiz-option {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 10px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--ink);
+    }
+    .quiz-option:hover { background: var(--mint); }
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat { background: var(--mint); border-radius: 14px; padding: 14px; }
+    .stat strong { display: block; font-size: 25px; color: var(--green); }
+    footer { text-align: center; padding: 24px 14px; color: var(--muted); font-size: 12px; }
+    @media (min-width: 620px) {
+      .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      nav button { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo" aria-hidden="true">🌿</div>
+    <h1>SKOPAT</h1>
+    <p>Explore plants. Learn nature. Grow your knowledge.</p>
+  </header>
+
+  <nav aria-label="Main navigation">
+    <button class="active" data-page="home">Home</button>
+    <button data-page="explore">Plants</button>
+    <button data-page="identify">Identify</button>
+    <button data-page="quiz">Quiz</button>
+    <button data-page="profile">Progress</button>
+  </nav>
+
+  <main>
+    <section class="page active" id="home">
+      <div class="hero">
+        <h2>Discover the green world. 🌱</h2>
+        <p>Welcome to SKOPAT, your simple plant-learning companion. Explore common plants, look up plant information, and test what you know.</p>
+        <button class="primary" data-go="explore">Explore plants</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="muted">Plants explored</span><strong id="homeExplored">0</strong></div>
+        <div class="stat"><span class="muted">Quiz points</span><strong id="homePoints">0</strong></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h2>🌿 Plant tip of the day</h2>
+        <p id="dailyTip">Most plants need the right balance of light, water, air, and nutrients to grow well.</p>
+        <button class="secondary" id="newTip">Show another tip</button>
+      </div>
+      <div class="card">
+        <h2>What can you do here?</h2>
+        <p>📚 <b>Learn:</b> Browse a small starter library of plants.</p>
+        <p>🔎 <b>Look up:</b> Use a plant name or upload a photo for your own reference.</p>
+        <p>🧠 <b>Practice:</b> Answer a short plant quiz and earn points.</p>
+      </div>
+    </section>
+
+    <section class="page" id="explore">
+      <h2>Plant Library 🌱</h2>
+      <p class="muted">Tap any plant card to read its details.</p>
+      <input id="plantSearch" type="search" placeholder="Search plants, e.g. mango">
+      <div class="grid" id="plantGrid"></div>
+      <div class="card" id="plantDetails" hidden></div>
+    </section>
+
+    <section class="page" id="identify">
+      <h2>Plant Look-up 🔎</h2>
+      <div class="card">
+        <p>Enter a plant name to see information from the SKOPAT starter library.</p>
+        <label for="plantName">Plant name</label>
+        <input id="plantName" placeholder="Example: sunflower">
+        <button class="primary" id="lookupButton">Look up plant</button>
+        <div id="lookupResult" aria-live="polite"></div>
+      </div>
+      <div class="card">
+        <h3>Or choose a photo</h3>
+        <p class="muted">This lets you preview a photo on your device. This prototype does not automatically identify plants from images.</p>
+        <input id="photoInput" type="file" accept="image/*" capture="environment">
+        <img id="photoPreview" alt="Selected plant photo preview">
+        <div id="photoMessage" class="muted"></div>
+        <div class="notice">Photo privacy: the preview is handled in this page on your device. It is not sent to a plant-identification service.</div>
+      </div>
+    </section>
+
+    <section class="page" id="quiz">
+      <h2>Plant Quiz 🧠</h2>
+      <div class="card">
+        <div class="muted" id="quizCount">Question 1</div>
+        <h3 id="quizQuestion"></h3>
+        <div id="quizOptions"></div>
+        <p id="quizFeedback" aria-live="polite"></p>
+        <button class="primary" id="nextQuestion" hidden>Next question</button>
+        <button class="secondary" id="restartQuiz">Restart quiz</button>
+      </div>
+    </section>
+
+    <section class="page" id="profile">
+      <h2>Your Progress 🏆</h2>
+      <div class="card">
+        <div class="stats">
+          <div class="stat"><span class="muted">Plants explored</span><strong id="profileExplored">0</strong></div>
+          <div class="stat"><span class="muted">Quiz points</span><strong id="profilePoints">0</strong></div>
+        </div>
+        <p class="muted">Progress is saved in this browser on this device when local storage is available.</p>
+        <button class="secondary" id="resetProgress">Reset progress</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>SKOPAT · A learning prototype · Plant details are for general learning.</footer>
+
+  <script>
+    const plants = [
+      {name:"Mango", scientific:"Mangifera indica", icon:"🥭", type:"Fruit tree", fact:"Mango trees grow in warm climates and produce edible fruit.", care:"Needs sunlight, space to grow, and suitable soil."},
+      {name:"Sunflower", scientific:"Helianthus annuus", icon:"🌻", type:"Flowering plant", fact:"Sunflowers are known for their large flower heads and seeds.", care:"Usually grows best with plenty of sunlight and well-drained soil."},
+      {name:"Gumamela", scientific:"Hibiscus rosa-sinensis", icon:"🌺", type:"Flowering shrub", fact:"Gumamela is a tropical ornamental plant with bright flowers.", care:"Grows well in warm conditions with sunlight and regular watering."},
+      {name:"Sampaguita", scientific:"Jasminum sambac", icon:"🤍", type:"Flowering shrub", fact:"Sampaguita is the national flower of the Philippines.", care:"Prefers warmth, sunlight, and soil that drains well."},
+      {name:"Rice", scientific:"Oryza sativa", icon:"🌾", type:"Cereal crop", fact:"Rice is a major food crop in the Philippines and many other countries.", care:"Growing conditions depend on the variety and farming system."},
+      {name:"Coconut", scientific:"Cocos nucifera", icon:"🥥", type:"Palm tree", fact:"Coconut palms provide food and useful materials.", care:"Grows best in warm tropical climates."},
+      {name:"Aloe vera", scientific:"Aloe vera", icon:"🪴", type:"Succulent", fact:"Aloe vera stores water in its thick leaves.", care:"Needs bright light and soil that drains well; avoid overwatering."},
+      {name:"Banana", scientific:"Musa spp.", icon:"🍌", type:"Fruit plant", fact:"Banana plants are large herbs, not woody trees.", care:"Usually needs warmth, water, nutrients, and room to grow."},
+      {name:"Gumamela", scientific:"Hibiscus rosa-sinensis", icon:"🌸", type:"Flowering shrub", fact:"Its flowers come in several colors.", care:"Prune carefully and give it enough light."}
+    ];
+
+    const tips = [
+      "Most plants need the right balance of light, water, air, and nutrients to grow well.",
+      "Too much water can harm roots. Check the soil and the plant's needs before watering.",
+      "Leaves help many plants capture sunlight to make food through photosynthesis.",
+      "Different plants need different amounts of sunlight and water.",
+      "Healthy soil can provide roots with water, air, and nutrients."
+    ];
+
+    const questions = [
+      {q:"Which part of a plant usually absorbs water from the soil?", options:["Flower","Root","Fruit","Seed"], answer:1, explain:"Roots absorb water and minerals from the soil."},
+      {q:"What do many plants use sunlight for?", options:["Photosynthesis","Making rocks","Producing plastic","Making soil"], answer:0, explain:"Plants use light energy during photosynthesis."},
+      {q:"Which of these is the national flower of the Philippines?", options:["Rose","Tulip","Sampaguita","Sunflower"], answer:2, explain:"Sampaguita is the national flower of the Philippines."},
+      {q:"A banana plant is best described as a...", options:["Woody tree","Large herb","Mushroom","Moss"], answer:1, explain:"Banana plants are large herbaceous plants."},
+      {q:"Which part often holds a plant upright and transports water?", options:["Stem","Petal","Seed coat","Fruit skin"], answer:0, explain:"The stem supports the plant and transports water and nutrients."}
+    ];
+
+    let explored = loadNumber("skopatExplored");
+    let points = loadNumber("skopatPoints");
+    let questionIndex = 0;
+    let answered = false;
+
+    function loadNumber(key) {
+      try { return Number(localStorage.getItem(key)) || 0; }
+      catch (e) { return 0; }
+    }
+    function saveProgress() {
+      try {
+        localStorage.setItem("skopatExplored", String(explored));
+        localStorage.setItem("skopatPoints", String(points));
+      } catch (e) {}
+      updateStats();
+    }
+    function updateStats() {
+      document.getElementById("homeExplored").textContent = explored;
+      document.getElementById("profileExplored").textContent = explored;
+      document.getElementById("homePoints").textContent = points;
+      document.getElementById("profilePoints").textContent = points;
+    }
+    function showPage(id) {
+      document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === id));
+      document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.page === id));
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+    document.querySelectorAll("nav button").forEach(button => {
+      button.addEventListener("click", () => showPage(button.dataset.page));
+    });
+    document.querySelectorAll("[data-go]").forEach(button => {
+      button.addEventListener("click", () => showPage(button.dataset.go));
+    });
+
+    function renderPlants(filter = "") {
+      const grid = document.getElementById("plantGrid");
+      const filtered = plants.filter(p => (p.name + " " + p.scientific + " " + p.type).toLowerCase().includes(filter.toLowerCase()));
+      grid.innerHTML = "";
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="card">No plant found in the starter library. Try another name.</div>';
+        return;
+      }
+      filtered.forEach((plant, index) => {
+        const button = document.createElement("button");
+        button.className = "plant";
+        button.innerHTML = `<div class="plant-icon">${plant.icon}</div><h3>${plant.name}</h3><div class="muted">${plant.type}</div><span class="tag">View details</span>`;
+        button.addEventListener("click", () => showPlantDetails(plant));
+        grid.appendChild(button);
+      });
+    }
+    function showPlantDetails(plant) {
+      explored++;
+      saveProgress();
+      const box = document.getElementById("plantDetails");
+      box.hidden = false;
+      box.innerHTML = `<h2>${plant.icon} ${plant.name}</h2><p><i>${plant.scientific}</i></p><p><b>Type:</b> ${plant.type}</p><p><b>About:</b> ${plant.fact}</p><p><b>Growing note:</b> ${plant.care}</p>`;
+      box.scrollIntoView({behavior:"smooth", block:"nearest"});
+    }
+    document.getElementById("plantSearch").addEventListener("input", e => renderPlants(e.target.value));
+
+    function lookupPlant() {
+      const query = document.getElementById("plantName").value.trim().toLowerCase();
+      const result = document.getElementById("lookupResult");
+      if (!query) {
+        result.innerHTML = "<p>Please enter a plant name first.</p>";
+        return;
+      }
+      const plant = plants.find(p => p.name.toLowerCase() === query || p.scientific.toLowerCase() === query);
+      if (!plant) {
+        result.innerHTML = '<div class="notice">That plant is not in the starter library yet. Try Mango, Sunflower, Gumamela, Sampaguita, Rice, Coconut, Aloe vera, or Banana.</div>';
+        return;
+      }
+      explored++;
+      saveProgress();
+      result.innerHTML = `<div class="card"><h3>${plant.icon} ${plant.name}</h3><p><i>${plant.scientific}</i></p><p><b>Type:</b> ${plant.type}</p><p>${plant.fact}</p><p><b>Growing note:</b> ${plant.care}</p></div>`;
+    }
+    document.getElementById("lookupButton").addEventListener("click", lookupPlant);
+    document.getElementById("plantName").addEventListener("keydown", e => { if (e.key === "Enter") lookupPlant(); });
+
+    document.getElementById("photoInput").addEventListener("change", e => {
+      const file = e.target.files && e.target.files[0];
+      const preview = document.getElementById("photoPreview");
+      const message = document.getElementById("photoMessage");
+      if (!file) { preview.style.display = "none"; message.textContent = ""; return; }
+      if (!file.type.startsWith("image/")) {
+        message.textContent = "Please choose an image file.";
+        preview.style.display = "none";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        preview.src = reader.result;
+        preview.style.display = "block";
+        message.textContent = "Photo preview ready. Automatic image identification is not included in this prototype.";
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function renderQuestion() {
+      answered = false;
+      const q = questions[questionIndex];
+      document.getElementById("quizCount").textContent = `Question ${questionIndex + 1} of ${questions.length}`;
+      document.getElementById("quizQuestion").textContent = q.q;
+      document.getElementById("quizFeedback").textContent = "";
+      document.getElementById("nextQuestion").hidden = true;
+      const box = document.getElementById("quizOptions");
+      box.innerHTML = "";
+      q.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.className = "quiz-option";
+        button.textContent = option;
+        button.addEventListener("click", () => answerQuestion(index));
+        box.appendChild(button);
+      });
+    }
+    function answerQuestion(index) {
+      if (answered) return;
+      answered = true;
+      const q = questions[questionIndex];
+      const correct = index === q.answer;
+      if (correct) { points += 10; saveProgress(); }
+      document.querySelectorAll(".quiz-option").forEach((button, i) => {
+        button.disabled = true;
+        if (i === q.answer) button.style.borderColor = "#176b45";
+        if (i === index && !correct) button.style.borderColor = "#c44";
+      });
+      document.getElementById("quizFeedback").textContent = correct ? `Correct! +10 points. ${q.explain}` : `Not quite. ${q.explain}`;
+      const next = document.getElementById("nextQuestion");
+      next.hidden = false;
+      next.textContent = questionIndex === questions.length - 1 ? "See results" : "Next question";
+    }
+    document.getElementById("nextQuestion").addEventListener("click", () => {
+      if (questionIndex < questions.length - 1) {
+        questionIndex++;
+        renderQuestion();
+      } else {
+        document.getElementById("quizQuestion").textContent = "Quiz complete! 🌟";
+        document.getElementById("quizOptions").innerHTML = `<p>You earned ${points} total points.</p>`;
+        document.getElementById("quizFeedback").textContent = "Keep learning about plants!";
+        document.getElementById("nextQuestion").hidden = true;
+      }
+    });
+    document.getElementById("restartQuiz").addEventListener("click", () => {
+      questionIndex = 0;
+      renderQuestion();
+    });
+
+    document.getElementById("newTip").addEventListener("click", () => {
+      const current = document.getElementById("dailyTip").textContent;
+      const choices = tips.filter(t => t !== current);
+      document.getElementById("dailyTip").textContent = choices[Math.floor(Math.random() * choices.length)];
+    });
+    document.getElementById("resetProgress").addEventListener("click", () => {
+      if (confirm("Reset your SKOPAT progress on this device?")) {
+        explored = 0;
+        points = 0;
+        saveProgress();
+      }
+    });
+
+    renderPlants();
+    renderQuestion();
+    updateStats();
+  </script>
+</body>
+</html>
